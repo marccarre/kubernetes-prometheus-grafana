@@ -1,0 +1,29 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  namespace: monitoring
+  name: prometheus
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: prometheus
+      labels:
+        name: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+      - name: prometheus
+        image: quay.io/prometheus/prometheus:v1.7.2
+        # image: quay.io/prometheus/prometheus:v2.0.0-beta.5
+        ports:
+        - name: web
+          containerPort: 9090
+        volumeMounts:
+        - name: config-volume-prometheus
+          mountPath: /etc/prometheus
+      volumes:
+      - name: config-volume-prometheus
+        configMap:
+          name: prometheus
