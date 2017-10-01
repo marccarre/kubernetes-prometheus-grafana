@@ -23,7 +23,7 @@ variable "machine_type" {
 
 variable "initial_node_count" {
   description = "Initial number of Kubernetes nodes."
-  default     = 1
+  default     = 3
 }
 
 variable "username" {
@@ -47,32 +47,29 @@ provider "google" {
   project = "${var.project}"
 }
 
-resource "google_container_node_pool" "default" {
-  name_prefix        = "${var.cluster}"
-  zone               = "${var.zone}"
-  cluster            = "${google_container_cluster.default.name}"
-  initial_node_count = "${var.initial_node_count}"
-}
-
 resource "google_container_cluster" "default" {
-  name               = "${var.cluster}"
-  zone               = "${var.zone}"
-  initial_node_count = "${var.initial_node_count}"
-  node_version       = "${var.node_version}"
+  name         = "${var.cluster}"
+  zone         = "${var.zone}"
+  node_version = "${var.node_version}"
+
+  node_pool = [{
+    name_prefix        = "${var.cluster}"
+    initial_node_count = "${var.initial_node_count}"
+
+    node_config {
+      machine_type = "${var.machine_type}"
+
+      oauth_scopes = [
+        "https://www.googleapis.com/auth/compute",
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring",
+      ]
+    }
+  }]
 
   master_auth {
     username = "${var.username}"
     password = "${var.password}"
-  }
-
-  node_config {
-    machine_type = "${var.machine_type}"
-
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/compute",
-      "https://www.googleapis.com/auth/devstorage.read_only",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring",
-    ]
   }
 }
