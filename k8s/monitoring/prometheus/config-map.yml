@@ -156,6 +156,9 @@ data:
       - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
         action: drop
         regex: false
+      - source_labels: [__meta_kubernetes_namespace]
+        action: drop
+        regex: kube-system
       - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
         action: replace
         target_label: __scheme__
@@ -187,6 +190,9 @@ data:
       - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_probe]
         action: drop
         regex: false
+      - source_labels: [__meta_kubernetes_namespace]
+        action: drop
+        regex: kube-system
 
     # The below ingress section is commented out to avoid:
     # level=error msg="Error loading config: couldn't load configuration (-config.file=/etc/prometheus/prometheus.yml): Unknown Kubernetes SD role "ingress"" source="main.go:160"
@@ -243,6 +249,9 @@ data:
       - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
         action: drop
         regex: false
+      - source_labels: [__meta_kubernetes_namespace]
+        action: drop
+        regex: kube-system
       - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
         action: replace
         target_label: __metrics_path__
