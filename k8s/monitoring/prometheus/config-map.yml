@@ -159,6 +159,10 @@ data:
       - source_labels: [__meta_kubernetes_namespace]
         action: drop
         regex: kube-system
+      # Do not scrape Kubernetes itself at an endpoint level
+      - source_labels: [__meta_kubernetes_endpoints_name]
+        action: drop
+        regex: kubernetes
       - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
         action: replace
         target_label: __scheme__
@@ -193,6 +197,10 @@ data:
       - source_labels: [__meta_kubernetes_namespace]
         action: drop
         regex: kube-system
+      # Do not scrape Kubernetes itself at a service level:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: drop
+        regex: kubernetes
 
     # The below ingress section is commented out to avoid:
     # level=error msg="Error loading config: couldn't load configuration (-config.file=/etc/prometheus/prometheus.yml): Unknown Kubernetes SD role "ingress"" source="main.go:160"
